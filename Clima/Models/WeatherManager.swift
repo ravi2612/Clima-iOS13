@@ -23,7 +23,15 @@ struct WeatherManager {
             let session = URLSession(configuration: .default)
             
             //3. Give the session a task
-            let task = session.dataTask(with: url, completionHandler: handle(data:responde:error:))
+            let task = session.dataTask(with: url) { (data, response, error) in
+                if error != nil {
+                    print(error!)
+                    return
+                }
+                if let safeData = data {
+                    self.parseJSON(weatherData: safeData)
+                }
+            }
             
             //4. Start the task
             
@@ -33,16 +41,41 @@ struct WeatherManager {
         
     }
     
-    func handle(data: Data?, responde: URLResponse?, error: Error?) {
-        if error != nil {
-            print(error!)
-            return
+    func parseJSON(weatherData: Data) {
+        let decoder = JSONDecoder()
+        do {
+            let decodedData =  try decoder.decode(WeatherData.self, from: weatherData)
+            let id = decodedData.weather[0].id
+            print(getConditionName(weatherId: id))
+            print(decodedData.main.temp)
+            print(decodedData.weather[0].description)
+            print(decodedData.weather[0].id)
+        } catch {
+            print(error)
         }
-        if let safeData = data {
-            let dataString = String(data: safeData, encoding: .utf8)
-            print(dataString)
-        }
-        
     }
+    
+    func getConditionName(weatherId: Int) -> String {
+        switch weatherId {
+                case 200...232:
+                    return "cloud.bolt"
+                case 300...321:
+                    return "cloud.drizzle"
+                case 500...531:
+                    return "cloud.rain"
+                case 600...622:
+                    return "cloud.snow"
+                case 701...781:
+                    return "cloud.fog"
+                case 800:
+                    return "sun.max"
+                case 801...804:
+                    return "cloud.bolt"
+                default:
+                    return "cloud"
+                }
+
+    }
+    
 }
 

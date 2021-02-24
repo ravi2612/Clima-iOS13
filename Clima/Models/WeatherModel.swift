@@ -14,10 +14,12 @@ struct WeatherModel {
     let cityName: String
     let temperature: Double
     
-    var  
+    var temperatureString: String {
+        return String(format: "%.1f", temperature)
+    }
     
-    func getConditionName(weatherId: Int) -> String {
-        switch weatherId {
+    var conditionName: String {
+        switch conditionId {
                 case 200...232:
                     return "cloud.bolt"
                 case 300...321:
@@ -35,7 +37,6 @@ struct WeatherModel {
                 default:
                     return "cloud"
                 }
-
     }
 }
 

@@ -9,7 +9,7 @@
 import Foundation
 
 struct WeatherData: Decodable {
-    let name: Main
+    let name: String
     let main: Main
     let weather: [Weather]
     
